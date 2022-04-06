@@ -12,3 +12,10 @@ the data set every time. A grid search algorithm is then implemented in a simila
 visualise the outcome, a grid is created. This grid is bounded in a space defined by the spatial range of values of èast and north. This grid array is assigned the 
 value of average floor size of 92.88 sq meters. The grid can now be used for predict method and the response variable price is also made into a grid to be used in the 
 method. The hp_pred dataset is now re-shaped to have the same dimensions and is ready for graphing.
+
+** Important **
+
+Make sure you run the python code that is provided here after you download the .csv file in this repository. The function surf3d(opt_nn2,fl_area) will allow you to
+look housing prices when you specify what sized apartments/living spaces you want to do the analysis for.
+
+For example running surf3d(opt_nn2,75.0) will create a 3D graph of housing prices (of size=75 sq metres) in terms of their location.
