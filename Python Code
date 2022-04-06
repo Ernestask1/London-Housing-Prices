@@ -94,3 +94,9 @@ def surf3d(pipe_model,fl_area):
     ax.set_zlabel('Price at Floor Area')
     #pl.show()
     return
+    
+# An example of how to use the model for apartments of fl_area=75
+
+surf3d(opt_nn2,75.0)
+
+# Same can be done for any fl_area you would like
