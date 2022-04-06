@@ -1,0 +1,96 @@
+# importing all the necessary packages 
+
+import numpy as np
+import pandas as pd
+import matplotlib as mpl
+import pylab as pl
+%matplotlib inline
+mpl.rcParams['figure.figsize'] = (15, 10)
+
+# creating datasets based on specific value of fl_area
+hp = pd.read_csv('hpdemo.csv',dtype=float)
+#Scaling
+from sklearn.preprocessing import StandardScaler
+x_scaler = StandardScaler()
+x_scaler.fit(hp[['east','north','fl_area']])
+X = x_scaler.transform(hp[['east','north','fl_area']]) # z-scored predictors
+
+# We will use the Knearest neighbours algorithm in ML
+from sklearn.neighbors import KNeighborsRegressor as NN
+reg_object = NN(n_neighbors=6,weights='uniform',p=2) # p=2 for euclidian distance
+price = hp['price']/1000.0 
+reg_object.fit(X,price)
+
+# optimising tuning parameter
+from sklearn.metrics import mean_absolute_error, make_scorer
+mae = make_scorer(mean_absolute_error, greater_is_better=False)
+
+from sklearn.model_selection import GridSearchCV
+opt_nn = GridSearchCV(
+    estimator = NN(),
+    scoring = mae,
+    param_grid = {
+        'n_neighbors':range(1,35),
+        'weights':['uniform','distance'],
+        'p':[1,2]})
+
+opt_nn.fit(X,price)
+
+# Pipeline
+from sklearn.pipeline import Pipeline
+pipe = Pipeline([('zscores',StandardScaler()), ('NNreg',NN(n_neighbors=6,weights='uniform',p=2))])
+pipe.fit(hp[['east','north','fl_area']],price)
+
+pipe = Pipeline([('zscores',StandardScaler()),('NNreg',NN())])
+
+opt_nn2 = GridSearchCV(
+    estimator = pipe,
+    scoring = mae,
+    param_grid = {
+        'NNreg__n_neighbors':range(1,35),
+        'NNreg__weights':['uniform','distance'],
+        'NNreg__p':[1,2]})
+
+opt_nn2.fit(hp[['east','north','fl_area']],price)
+
+
+# creating a  mesh for the area of the data
+east_mesh, north_mesh = np.meshgrid(np.linspace(505000,555800,100), np.linspace(158400,199900,100))
+fl_mesh = np.zeros_like(east_mesh)
+fl_mesh[:,:] = np.mean(hp['fl_area'])
+
+# Now to put all three variables into a predict method
+grid_predictor_vars = np.array([east_mesh.ravel(), north_mesh.ravel(),fl_mesh.ravel()]).T
+hp_pred = opt_nn2.predict(grid_predictor_vars)
+hp_mesh = hp_pred.reshape(east_mesh.shape)
+
+# Now we can make a 3D plot of predicted house prices for a house with mean floor are = 92.88
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = pl.figure()
+ax = Axes3D(fig)
+ax.plot_surface(east_mesh, north_mesh, hp_mesh, rstride=1, cstride=1, cmap='YlOrBr',lw=0.01)
+ax.set_xlabel('Easting')
+ax.set_ylabel('Northing')
+ax.set_zlabel('Price at Mean Floor Area')
+pl.show()
+
+# ----------------------------
+
+def surf3d(pipe_model,fl_area):
+    east_mesh, north_mesh = np.meshgrid(
+        np.linspace(505000,555800,100),
+        np.linspace(158400,199900,100))
+    fl_mesh = np.zeros_like(east_mesh)
+    fl_mesh[:,:] = fl_area
+    grid_predictor_vars = np.array([east_mesh.ravel(),north_mesh.ravel(),fl_mesh.ravel()]).T
+    hp_pred = pipe_model.predict(grid_predictor_vars)
+    hp_mesh = hp_pred.reshape(east_mesh.shape)
+    fig = pl.figure()
+    ax = Axes3D(fig)
+    ax.plot_surface(east_mesh, north_mesh, hp_mesh, rstride=1, cstride=1, cmap='YlOrBr',lw=0.01)
+    ax.set_xlabel('Easting')
+    ax.set_ylabel('Northing')
+    ax.set_zlabel('Price at Floor Area')
+    #pl.show()
+    return
