@@ -8,7 +8,7 @@ import pylab as pl
 mpl.rcParams['figure.figsize'] = (15, 10)
 
 # creating datasets based on specific value of fl_area
-hp = pd.read_csv('hpdemo.csv',dtype=float)
+hp = pd.read_csv('London_house_price.csv',dtype=float)
 #Scaling
 from sklearn.preprocessing import StandardScaler
 x_scaler = StandardScaler()
