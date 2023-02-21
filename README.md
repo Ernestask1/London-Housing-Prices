@@ -10,3 +10,6 @@ Each combination of items in the dictionary will be tested, and combination with
 A pipeline algorithm is then implemented because of its convenience to calibrating models and making predictions using the original data, rather than manually re-scaling the data set every time. A grid search algorithm is then implemented in a similar way to the `opt_nn` which also fits our predictors and the response variable. 
 
 To now visualise the outcome, a grid is created. This grid is bounded in a space defined by the spatial range of values of `èast` and `north`. This grid array is assigned the value of average floor size of 92.88 sq meters. The grid can now be used for predict method and the response variable `price` is also made into a grid to be used in the method. The `hp_pred` dataset is now re-shaped to have the same dimensions and is ready for graphing.
+
+
+![House price per mean floor area](https://user-images.githubusercontent.com/99913034/220473244-ca866ad2-4c5d-43b1-b60c-7035c149581d.png)
