@@ -1,6 +1,17 @@
 # London Housing Prices
 
-For this project, London house pricing data was taken and analysed. The Knearest neighbours algorithm was used from the package `sklearn` in python as a machine learning tool. The first step is to scale the data so that it can be optimal for use within the algorithm. The predictor variables `east``north` and `fl_area` go through a calibrated scaler to transform them to z-scores. The tuning parameters of nearest neighbours=6, weights='uniform' and Euclidean distance metric p=2 were chosen. 
+For this project, London house pricing data was taken and analysed. Using 'Pandas' library we can merge the London Boroughs .geojson file that contains the geographic locations of each borough to their respective names in the London Profiles dataset. This dataset contains a lot of information of each borough such as 'CrimeRate', 'BornAbroad', 'AveAge' etc..
+
+For our analysis we will make use of the 'HousePrice' column to perform data analysis. Making use of some coding techniques, we can create a table that contains information related to housing price for each borough. _(Here a glimpse of what table structure looks like)_
+
+![some info](https://user-images.githubusercontent.com/99913034/220478998-ce5c264b-4e36-4b91-9ffb-bbd2e663fa26.PNG)
+
+By taking the house point density for each borough, we can create a plot to show the concentration of houses within each borough. Increasing concentration is shown for darker shades of blue.
+
+![Boroughs](https://user-images.githubusercontent.com/99913034/220480245-42a320f7-f7c7-49d3-8ae4-ee6e8f192373.png)
+
+
+The Knearest neighbours algorithm was used from the package `sklearn` in python as a machine learning tool. The first step is to scale the data so that it can be optimal for use within the algorithm. The predictor variables `east``north` and `fl_area` go through a calibrated scaler to transform them to z-scores. The tuning parameters of nearest neighbours=6, weights='uniform' and Euclidean distance metric p=2 were chosen. 
 Then we initiate the response variable to be `price` and fit the regression of our 3 predictors to the scaled response variables. To optimise the turing parameters a scoring method is imported.
 
 A grid search model is imported and we initiate the `estimator` to the nearest neighbour algorithm, scoring system is `mae` and the `param_grid` is a dictionary with keys corresponding to parameters. 
