@@ -1,14 +1,62 @@
 # importing all the necessary packages 
 
+import seaborn
 import numpy as np
+import geopandas as gpd
 import pandas as pd
 import matplotlib as mpl
+import pysal
+import mapclassify
+import matplotlib.pyplot as plt
 import pylab as pl
 %matplotlib inline
 mpl.rcParams['figure.figsize'] = (15, 10)
 
-# creating datasets based on specific value of fl_area
-hp = pd.read_csv('London_house_price.csv',dtype=float)
+# Load profiles and boroughs geojson and merge
+profiles = pd.read_csv('lb_profiles.csv')
+lb = gpd.read_file('london_boroughs.geojson')
+lb_map = lb.merge(profiles)
+
+# Performing a spatial join to aggregate house points to the boroughs. 
+# We create columns for mean price, summed price, summed floor area ( to create average price per floor area)
+# We count the house points in each borough
+
+hp3 = gpd.sjoin(hp2,lb_map)
+hp4 = hp3.groupby('NAME').agg({'price':['mean','median','sum'],'fl_area':'sum','ID':'count'})
+hp4.columns = ['Mean_Price','Median_Price','Sum_Price','Sum_Floor_Area','House_Count']
+hp4 = hp4.reset_index()
+hp4['Ave_Area_Price'] = hp4['Sum_Price']/hp4['Sum_Floor_Area']
+hp4
+
+# Now merge the hp4 file to the boroughs dataset for housing density calculations
+# Multiply the HECTARES value by 0.01 to obtain final measure in units per km^2
+lb2 = lb_map.merge(hp4)
+lb2['House_Dens'] = lb2['House_Count']/(lb2['HECTARES']*.01)
+lb2
+
+# Adding an equal interval classifier to give equal widths to the House_Dens value for each borough
+ei5 = mapclassify.EqualInterval(lb2.House_Dens, k=5)
+ei5
+
+# We can now plot the House density of each borough to get a picture of the concentration of houses in London Boroughs
+f, ax = plt.subplots(1, figsize=(15, 10)) 
+lb2.plot(ax=ax, column='House_Dens', legend=True, cmap='Blues', scheme='EqualInterval', k=5, edgecolor='white')
+ax.set_axis_off() #Remove axes from plot 
+ax.set_title('House Point Density (units per sq. km.)') #Plot title text
+plt.axis('equal') #Set x and y axes to be equal size
+plt.show()
+
+----------------------------------------------------------------------------------------------------------------------
+# Machine Learning process
+----------------------------------------------------------------------------------------------------------------------
+# Load housing price data
+hp = pd.read_csv('London_housing_price.csv',dtype=float)
+hp['price'] = hp['price']
+hp2 = gpd.GeoDataFrame(
+    hp, geometry=gpd.points_from_xy(x=hp.east, y=hp.north)
+)
+hp2.crs = lb.crs
+
 #Scaling
 from sklearn.preprocessing import StandardScaler
 x_scaler = StandardScaler()
