@@ -54,3 +54,7 @@ Edge effects in this graph are much more prominent than what we saw previously. 
 # Conclusion
 
 House prices in London vary by location. In particular the average sized living spaces see big variations in price whereas the degree to which the bigger houses/apartments are affected is a lot less. This is seen visually in our graphs and the slopes that indicate price variation reflect this conclusion. The Knearest neighbour machine learning algorithm is an ideal tool to perform this analysis.
+
+The analysis performed in this project was adapted from
+Rey, S.J., Arribas-Bel, D., & Wolf, L.J. (2020). Geographic Data Science With Python by Chloropleth Mapping Rey, S.J., Arribas-Bel, D., & Wolf, L.J. (2020). Geographic Data Science With Python,
+https://geographicdata.science/book/notebooks/05_choropleth.html#principles
